@@ -1,0 +1,8 @@
+scikit-learn
+nltk
+selenium
+requests
+aiohttp
+discord
+quart
+asyncio

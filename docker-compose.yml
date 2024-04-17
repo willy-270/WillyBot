@@ -1,0 +1,7 @@
+services:
+  willybot:
+    build: .
+    environment:
+      - TZ=America/Chicago
+    ports:
+      - "3232:3232"
