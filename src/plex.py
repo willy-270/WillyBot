@@ -1,4 +1,3 @@
-import asyncio
 from quart import Quart, request
 from consts import PORT, PLEX_CHANNEL_ID
 import json
