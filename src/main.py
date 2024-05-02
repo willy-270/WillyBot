@@ -1,14 +1,15 @@
-import client
-import plex
+from client import start
+from plex import run_server
 import asyncio
 
-# so it gets ran
 import on_message
 import commands
 
 async def main():
-    await client.start()
-    await plex.run_server()
+    await asyncio.gather(start(), run_server())
 
 if __name__ == "__main__":
     asyncio.run(main())
+    
+
+
