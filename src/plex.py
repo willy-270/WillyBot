@@ -7,6 +7,8 @@ import discord
 
 app = Quart(__name__)
 
+print("Plex listener loaded")
+
 @app.route('/plex_wh', methods=['POST'])
 async def receive_data():
     form = await request.form

@@ -1,16 +1,15 @@
 from discord.ext import tasks
-from datetime import datetime, time
+from datetime import datetime
 from minecraft import minecraft, minecraft_auth
 from AI import ai
 import discord
-import client
+from client import bot
 import random
 import operator
-from consts import OWNER_ID, LOG_CHANNEL_ID, PLAYER_LIST_CHANNEL_ID
-import plex
+from consts import OWNER_ID, LOG_CHANNEL_ID
 
 
-@client.bot.tree.command(
+@bot.tree.command(
     name = "ask", 
     description = "ask thing", 
 )
@@ -31,7 +30,7 @@ async def self(
 running = False
 player_list = discord.Message
 
-@client.bot.tree.command(
+@bot.tree.command(
     name = "toggle_player_list", 
     description = "yep",
 )
@@ -81,7 +80,7 @@ async def update_list():
     gamertags.sort(key=operator.itemgetter('gamertag'))
 
     join_leave_logs_id = LOG_CHANNEL_ID
-    join_leaves = client.bot.get_channel(join_leave_logs_id)
+    join_leaves = bot.get_channel(join_leave_logs_id)
 
     just_gamertags = []
     for player in gamertags:
@@ -140,7 +139,7 @@ async def update_list():
     await player_list.edit(embed=r)
     
 
-@client.bot.tree.command(
+@bot.tree.command(
     name = "test", 
     description = "yep",
 )
@@ -149,7 +148,7 @@ async def self(
     user: discord.User,
     msg: str
 ):
-    owner = await client.bot.fetch_user(OWNER_ID)
+    owner = await bot.fetch_user(OWNER_ID)
 
     await owner.send(f"{interaction.user}: {msg} \nto {user}")
     await user.send(msg)
@@ -157,7 +156,7 @@ async def self(
     await interaction.response.send_message("done", ephemeral=True)
 
 
-@client.bot.tree.command(
+@bot.tree.command(
     name = "ping_random_member", 
     description = "yep",
 )
@@ -169,7 +168,7 @@ async def self(
     
     await interaction.response.send_message(content=chosen.mention)
 
-@client.bot.tree.command(
+@bot.tree.command(
     name = "shutdown",
     description = "yep",
 )
@@ -180,43 +179,5 @@ async def self(
         await interaction.response.send_message("You can't do that!", ephemeral=True)
         return
     await interaction.response.send_message("Shutting down...", ephemeral=True)
-    await client.bot.close()
-
-# alex_msgs_left = 3
-# alex_id = 905459622884814868
-
-# tz = datetime.now().astimezone().tzinfo
-# midnight = time(hour=0, minute=0, second=0, microsecond=0, tzinfo=tz)
-
-# @tasks.loop(time=midnight)
-# async def reset_alex_msgs():
-#     global alex_msgs_left
-#     alex_msgs_left = 3
-
-@client.bot.event 
-async def on_message(message):
-    if isinstance(message.channel,discord.DMChannel) and message.author != client.bot.user:
-        user = message.author
-        name = user.display_name
-
-        willy_user = await client.bot.fetch_user(OWNER_ID)
-        await willy_user.send(f"{name}: {message.content}")
-
-    if message.channel.id == PLAYER_LIST_CHANNEL_ID and message.author != client.bot.user and message.author.id != OWNER_ID:
-        await message.author.send("GET THE FUCK OUT OF MY CHANNEL")
-        await message.delete()
-
-    msg_lower = message.content.lower()
-    if "skibidi" in msg_lower and message.author != client.bot.user:
-        await message.reply("SKIBIDI TOILET RIZZ IN OHIO?!!!?!? https://images.sftcdn.net/images/t_app-cover-l,f_auto/p/4f7aac60-2de4-47e6-94f1-2f642827824c/1253432816/skibidi-toilet-1-screenshot.png")  
-
-    global alex_msgs_left
-
-    # if message.author.id == alex_id:
-    #     if alex_msgs_left > 0:
-    #         alex_msgs_left -= 1
-    #         await message.reply(f"Messages left today: {alex_msgs_left}")
-    #     else:
-    #         await message.delete()
-
+    await bot.close()
         

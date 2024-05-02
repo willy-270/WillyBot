@@ -1,6 +1,6 @@
-import discord
 from consts import BOT_TOKEN
 from discord.ext import commands
+import discord
 
 bot = commands.Bot(command_prefix='', intents=discord.Intents.all())
 
@@ -13,5 +13,6 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-def run():
-    bot.run(BOT_TOKEN)
+async def start():
+    await bot.start(BOT_TOKEN)
+    
