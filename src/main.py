@@ -2,6 +2,7 @@ from client import start
 from plex import run_server
 import asyncio
 
+#so that fucntions get included
 import on_message
 import commands
 

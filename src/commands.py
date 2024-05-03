@@ -1,3 +1,4 @@
+import os
 from discord.ext import tasks
 from datetime import datetime
 from minecraft import minecraft, minecraft_auth
@@ -6,7 +7,13 @@ import discord
 from client import bot
 import random
 import operator
+import numpy as np
+import matplotlib.pyplot as plt
 from consts import OWNER_ID, LOG_CHANNEL_ID
+from sympy import lambdify, sqrt
+from sympy.parsing.sympy_parser import (parse_expr, standard_transformations,
+                                         implicit_multiplication_application,
+                                         implicit_application)
 
 
 @bot.tree.command(
@@ -157,27 +164,60 @@ async def self(
 
 
 @bot.tree.command(
-    name = "ping_random_member", 
-    description = "yep",
+    name="graph",
+    description="Graph a mathematical function. Use '**' for exponents, '*' for multiplication, 'sqrt(x)' for square root, 'log10(x)' for log, etc."
+)
+@discord.app_commands.describe(
+    function="exclude \"y=\"/\"f(x)=\", give just the expression. Example: \"sin(x)\", or \"x+3\"."
 )
 async def self(
     interaction: discord.Interaction,
+    function: str,
+    ymin: int = -10,
+    ymax: int = 10,
+    xmin: int = -10,
+    xmax: int = 10,
+    points_on_whole_nums: bool = False,
+    show_grid: bool = True
 ):
-    members = interaction.guild.members
-    chosen = random.choice(members)
-    
-    await interaction.response.send_message(content=chosen.mention)
+    modified_function = function.replace("^", "**")
 
-@bot.tree.command(
-    name = "shutdown",
-    description = "yep",
-)
-async def self(
-    interaction: discord.Interaction,
-):
-    if interaction.user.id != OWNER_ID:
-        await interaction.response.send_message("You can't do that!", ephemeral=True)
+    transformations = standard_transformations + (implicit_multiplication_application,) + (implicit_application,)
+
+    try:
+        expr = parse_expr(modified_function, transformations=transformations)
+        f = lambdify('x', expr, modules=['numpy', {'sqrt': np.sqrt, 
+                                                   'log': np.log10, 
+                                                   'sin': np.sin, 
+                                                   'cos': np.cos, 
+                                                   'tan': np.tan}])
+        x = np.linspace(xmin, xmax, 100)
+        y = f(x)
+        plt.plot(x, y, color='c')
+    except Exception as e:
+        await interaction.response.send_message(f"Error evaluating the function.")
         return
-    await interaction.response.send_message("Shutting down...", ephemeral=True)
-    await bot.close()
-        
+
+    plt.axis([xmin, xmax, ymin, ymax])
+    if show_grid:
+        plt.grid(True, which='both', linestyle='-', linewidth=0.5)
+    plt.xticks(np.arange(xmin, xmax+1, (xmax-xmin)/10))
+    plt.yticks(np.arange(ymin, ymax+1, (ymax-ymin)/10))
+    plt.axhline(0, color='k')
+    plt.axvline(0, color='k')
+    plt.xlabel('x')
+    plt.ylabel('y', rotation=0, labelpad=10)
+    plt.title(f"$f(x)={function}$")
+
+    if points_on_whole_nums:
+        for i in range(xmin, xmax+1):
+            if f(i) % 1 == 0:
+                plt.plot(i, f(i), "ko", markersize=5)
+
+    plt.gca().set_aspect('equal', adjustable='box')
+
+    plt.savefig("graph.png")
+    file = discord.File("graph.png")
+    await interaction.response.send_message(file=file)
+    os.remove("graph.png")
+    plt.clf()

@@ -6,3 +6,6 @@ aiohttp
 discord
 quart
 asyncio
+matplotlib
+numpy
+sympy
