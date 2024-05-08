@@ -227,7 +227,7 @@ client = OpenAI(api_key=OPENAI_KEY)
 
 @bot.tree.command(
     name = "gpt", 
-    description = "ask stuff", 
+    description = "ask stuff"
 )
 async def self(
     interaction: discord.Interaction, 
