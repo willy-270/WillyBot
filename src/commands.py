@@ -2,10 +2,8 @@ import os
 from discord.ext import tasks
 from datetime import datetime
 from minecraft import minecraft, minecraft_auth
-from AI import ai
 import discord
 from client import bot
-import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
@@ -15,24 +13,6 @@ from sympy.parsing.sympy_parser import (parse_expr, standard_transformations,
                                          implicit_multiplication_application,
                                          implicit_application)
 from openai import OpenAI
-
-
-@bot.tree.command(
-    name = "ask", 
-    description = "ask thing", 
-)
-async def self(
-    interaction: discord.Interaction, 
-    input: str
-):
-    await interaction.response.send_message("Thinking...")
-
-    try:
-        response = ai.get_reponse(input)
-    except Exception as e:
-        await interaction.edit_original_response(content=f"Something went wrong!, {e}")
-
-    await interaction.edit_original_response(content=response)
 
 
 running = False
@@ -226,7 +206,7 @@ async def self(
 client = OpenAI(api_key=OPENAI_KEY)
 
 @bot.tree.command(
-    name = "gpt", 
+    name = "ask", 
     description = "ask stuff"
 )
 async def self(
