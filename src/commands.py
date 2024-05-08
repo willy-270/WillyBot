@@ -9,11 +9,12 @@ import random
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
-from consts import OWNER_ID, LOG_CHANNEL_ID
+from consts import OWNER_ID, LOG_CHANNEL_ID, OPENAI_KEY
 from sympy import lambdify, sqrt
 from sympy.parsing.sympy_parser import (parse_expr, standard_transformations,
                                          implicit_multiplication_application,
                                          implicit_application)
+from openai import OpenAI
 
 
 @bot.tree.command(
@@ -221,3 +222,26 @@ async def self(
     await interaction.response.send_message(file=file)
     os.remove("graph.png")
     plt.clf()
+
+client = OpenAI(api_key=OPENAI_KEY)
+
+@bot.tree.command(
+    name = "gpt", 
+    description = "ask stuff", 
+)
+async def self(
+    interaction: discord.Interaction, 
+    prompt: str
+):
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt,}],
+            model="gpt-3.5-turbo",
+        )
+    except Exception as e:
+        await interaction.response.send_message(f"Something went wrong!\n\n{e}")
+
+    await interaction.response.send_message(chat_completion.choices[0].message.content)
+
+   
+
