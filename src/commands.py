@@ -146,7 +146,7 @@ async def self(
 
 @bot.tree.command(
     name="graph",
-    description="Graph a mathematical function. Use '**' for exponents, '*' for multiplication, 'sqrt(x)' for square root, 'log10(x)' for log, etc."
+    description="Graph a function. Use 'sqrt(x)' for square root, 'log(x)' for log, etc."
 )
 @discord.app_commands.describe(
     function="exclude \"y=\"/\"f(x)=\", give just the expression. Example: \"sin(x)\", or \"x+3\"."
@@ -215,7 +215,7 @@ async def self(
 ):
     try:
         chat_completion = client.chat.completions.create(
-            messages=[{"role": "user", "content": prompt,}],
+            messages=[{"role": "user", "content": prompt}],
             model="gpt-3.5-turbo",
         )
     except Exception as e:
