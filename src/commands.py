@@ -206,24 +206,26 @@ async def self(
 client = OpenAI(api_key=OPENAI_KEY)
 
 @bot.tree.command(
-    name = "ask", 
-    description = "ask stuff"
+    name="ask",
+    description="ask stuff"
 )
-async def self(
+async def ask(
     interaction: discord.Interaction, 
     prompt: str
 ):
-    await interaction.response.send_message("Thinking...")
+    await interaction.response.defer(thinking=True)
 
     try:
         chat_completion = client.chat.completions.create(
             messages=[{"role": "user", "content": prompt}],
             model="gpt-3.5-turbo",
         )
+
+        await interaction.edit_original_response(content=chat_completion.choices[0].message.content)
+    
     except Exception as e:
         await interaction.edit_original_response(content="Error: " + str(e))
 
-    await interaction.edit_original_response(content=chat_completion.choices[0].message.content)
 
    
 
