@@ -213,7 +213,7 @@ async def self(
     interaction: discord.Interaction, 
     prompt: str
 ):
-    interaction.response.send_message("Thinking...")
+    await interaction.response.send_message("Thinking...")
 
     try:
         chat_completion = client.chat.completions.create(
