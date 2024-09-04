@@ -213,7 +213,7 @@ async def self(
     interaction: discord.Interaction, 
     prompt: str
 ):
-    await interaction.response.send_message("Thinking...")
+    await interaction.response.defer(thinking=True)
 
     try:
         chat_completion = client.chat.completions.create(
@@ -221,9 +221,11 @@ async def self(
             model="gpt-3.5-turbo",
         )
     except Exception as e:
-        await interaction.edit_original_response(content="Error: " + str(e))
+        await interaction.followup.send(content="Error: " + str(e))
 
-    await interaction.edit_original_response(chat_completion.choices[0].message.content)
+    print(chat_completion.choices[0].message.content)
+
+    await interaction.followup.send(chat_completion.choices[0].message.content)
 
    
 
