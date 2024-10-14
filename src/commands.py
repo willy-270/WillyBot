@@ -232,24 +232,39 @@ async def ask(
 tz = datetime.now().astimezone().tzinfo
 morning = time(hour=7, minute=5, second=0, microsecond=0, tzinfo=tz)
 
+@bot.tree.command(
+    name="random_quote",
+    description="oh yeah"
+)
+async def quote(
+    interaction: discord.Interaction
+):
+    r = requests.get("https://zenquotes.io/api/random")
+    if r.status_code == 200:
+        r = r.json()
+        await interaction.response.send_message(f'{r[0]["q"]} — {r[0]["a"]}')
+    else:
+        await interaction.response.send_message("Error")
+        await interaction.response.send_message(f"Error: {r.status_code}")
+
 @tasks.loop(time=morning)
 async def good_morning():
+    meals_channel = bot.get_channel(MEALS_CHANNEL_ID)
+
     lmt = 1
     search_term = f"goodmorning {datetime.today().strftime('%A').lower()}"
-    r = requests.get(
-        "https://tenor.googleapis.com/v2/search?q=%s&key=%s&limit=%s" % (search_term, TENOR_API_KEY, lmt))
+    r = requests.get("https://tenor.googleapis.com/v2/search?q=%s&key=%s&limit=%s" % (search_term, TENOR_API_KEY, lmt))
     if r.status_code == 200:
         r = r.json()
         gif_url = r["results"][0]["media_formats"]["mediumgif"]["url"]
-        await bot.get_channel(MEALS_CHANNEL_ID).send(gif_url)
+        meals_channel.send(gif_url)
     else:
-        await bot.get_channel(MEALS_CHANNEL_ID).send(f"Error: {r.status_code}")
+        meals_channel.send(f"Error: {r.status_code}")
 
-    r = requests.get("https://api.quotable.io/random")
+    r = requests.get("https://zenquotes.io/api/random")
     if r.status_code == 200:
-        quote_data = r.json()
-        quote = quote_data["content"]
-        author = quote_data["author"]
-        await bot.get_channel(MEALS_CHANNEL_ID).send(f"\"{quote}\" - {author}")
+        r = r.json()
+        meals_channel.send(f'{r[0]["q"]} — {r[0]["a"]}')
     else:
-        await bot.get_channel(MEALS_CHANNEL_ID).send(f"Error: {r.status_code}")
+        meals_channel.send("Error")
+        meals_channel.send(f"Error: {r.status_code}")
