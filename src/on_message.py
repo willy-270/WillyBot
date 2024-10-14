@@ -14,7 +14,7 @@ import discord
 #     alex_msgs_left = 3
 
 @bot.event 
-async def on_message(message):
+async def on_message(message: discord.Message):
     if isinstance(message.channel,discord.DMChannel) and message.author != bot.user:
         user = message.author
         name = user.display_name
@@ -30,7 +30,13 @@ async def on_message(message):
     if "skibidi" in msg_lower and message.author != bot.user:
         await message.reply("SKIBIDI TOILET RIZZ IN OHIO?!!!?!? https://images.sftcdn.net/images/t_app-cover-l,f_auto/p/4f7aac60-2de4-47e6-94f1-2f642827824c/1253432816/skibidi-toilet-1-screenshot.png")  
 
-    global alex_msgs_left
+    if "nigger" or "nigga" in msg_lower:
+        await message.reply(":camera_with_flash:")
+        await message.pin()
+        await message.unpin()
+        
+
+    # global alex_msgs_left
 
     # if message.author.id == alex_id:
     #     if alex_msgs_left > 0:
