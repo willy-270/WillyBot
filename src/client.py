@@ -13,6 +13,10 @@ async def on_ready():
     except Exception as e:
         print(e)
 
+    from commands import good_morning
+    good_morning.start()
+
 async def start():
     await bot.start(BOT_TOKEN)
+
     

@@ -1,13 +1,16 @@
+import json
 import os
 from discord.ext import tasks
-from datetime import datetime
+from datetime import datetime, time
+
+import requests
 from minecraft import minecraft, minecraft_auth
 import discord
 from client import bot
 import operator
 import numpy as np
 import matplotlib.pyplot as plt
-from consts import OWNER_ID, LOG_CHANNEL_ID, OPENAI_KEY
+from consts import OWNER_ID, LOG_CHANNEL_ID, OPENAI_KEY, TENOR_API_KEY, MEALS_CHANNEL_ID
 from sympy import lambdify, sqrt
 from sympy.parsing.sympy_parser import (parse_expr, standard_transformations,
                                          implicit_multiplication_application,
@@ -226,6 +229,27 @@ async def ask(
     except Exception as e:
         await interaction.edit_original_response(content="Error: " + str(e))
 
+tz = datetime.now().astimezone().tzinfo
+morning = time(hour=7, minute=5, second=0, microsecond=0, tzinfo=tz)
 
-   
+@tasks.loop(time=morning)
+async def good_morning():
+    lmt = 1
+    search_term = f"goodmorning {datetime.today().strftime('%A').lower()}"
+    r = requests.get(
+        "https://tenor.googleapis.com/v2/search?q=%s&key=%s&limit=%s" % (search_term, TENOR_API_KEY, lmt))
+    if r.status_code == 200:
+        r = r.json()
+        gif_url = r["results"][0]["media_formats"]["mediumgif"]["url"]
+        await bot.get_channel(MEALS_CHANNEL_ID).send(gif_url)
+    else:
+        await bot.get_channel(MEALS_CHANNEL_ID).send(f"Error: {r.status_code}")
 
+    r = requests.get("https://api.quotable.io/random")
+    if r.status_code == 200:
+        quote_data = r.json()
+        quote = quote_data["content"]
+        author = quote_data["author"]
+        await bot.get_channel(MEALS_CHANNEL_ID).send(f"\"{quote}\" - {author}")
+    else:
+        await bot.get_channel(MEALS_CHANNEL_ID).send(f"Error: {r.status_code}")
