@@ -30,7 +30,7 @@ async def on_message(message: discord.Message):
     if "skibidi" in msg_lower and message.author != bot.user:
         await message.reply("SKIBIDI TOILET RIZZ IN OHIO?!!!?!? https://images.sftcdn.net/images/t_app-cover-l,f_auto/p/4f7aac60-2de4-47e6-94f1-2f642827824c/1253432816/skibidi-toilet-1-screenshot.png")  
 
-    if "nigger" or "nigga" in msg_lower:
+    if "nigger" in msg_lower or "nigga" in msg_lower:
         await message.reply(":camera_with_flash:")
         await message.pin()
         await message.unpin()
