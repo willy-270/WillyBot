@@ -16,7 +16,7 @@ async def on_ready():
     from commands import good_morning
     good_morning.start()
 
-def start():
-    bot.run(BOT_TOKEN)
+async def start():
+    bot.start(BOT_TOKEN)
 
     
