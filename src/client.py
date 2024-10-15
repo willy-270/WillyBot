@@ -17,6 +17,6 @@ async def on_ready():
     good_morning.start()
 
 async def start():
-    bot.start(BOT_TOKEN)
+    await bot.start(BOT_TOKEN)
 
     
