@@ -6,8 +6,10 @@ import asyncio
 import on_message
 import commands
 
-async def main():
-    await asyncio.gather(client.start(), plex.run_server())
+def main():
+    # await asyncio.gather(client.start(), plex.run_server())
+    client.start()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # asyncio.run(main(), debug=True)
+    main()

@@ -1,6 +1,8 @@
-from consts import PLAYER_LIST_CHANNEL_ID, OWNER_ID
+from consts import PLAYER_LIST_CHANNEL_ID, OWNER_ID, HALL_OF_SHAME_CHANNEL_ID
 from client import bot
 import discord
+from datetime import datetime
+from pytz import timezone
 
 # alex_msgs_left = 3
 # alex_id = 905459622884814868
@@ -31,10 +33,15 @@ async def on_message(message: discord.Message):
         await message.reply("SKIBIDI TOILET RIZZ IN OHIO?!!!?!")  
         await message.channel.send("https://images.sftcdn.net/images/t_app-cover-l,f_auto/p/4f7aac60-2de4-47e6-94f1-2f642827824c/1253432816/skibidi-toilet-1-screenshot.png")
 
-    if "nigger" in msg_lower or "nigga" in msg_lower:
-        await message.reply(":camera_with_flash:")
-        await message.pin()
-        await message.unpin()
+    if "nigger" in msg_lower:
+        embed = discord.Embed(title=message.author.display_name, 
+                              description=f"{message.content}\n\n{message.jump_url}",
+                              color=discord.Color.red())
+        embed.set_thumbnail(url=message.author.avatar.url)
+        embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
+        hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embed=embed)
+
+        await message.reply(f"This will not be forgetten.\n{hos_msg.jump_url}")
         
 
     # global alex_msgs_left

@@ -247,6 +247,19 @@ async def quote(
         await interaction.response.send_message("Error")
         await interaction.response.send_message(f"Error: {r.status_code}")
 
+@bot.tree.command(
+    name="purge",
+    description="purge messages"
+)
+async def purge(
+    interaction: discord.Interaction,
+    amount: int
+):
+    if interaction.user.id == OWNER_ID:
+        await interaction.channel.purge(limit=amount)
+    else:
+        await interaction.response.send_message("only big willy can do that.", ephemeral=True)
+
 @tasks.loop(time=morning)
 async def good_morning():
     meals_channel = bot.get_channel(MEALS_CHANNEL_ID)
