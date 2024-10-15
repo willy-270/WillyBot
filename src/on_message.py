@@ -54,7 +54,7 @@ async def on_message(message: discord.Message):
     #         await message.delete()
 
 @bot.event
-async def on_reaction_add(reaction: discord.Reaction, user: discord.User):
+async def on_raw_reaction_add(reaction: discord.Reaction, user: discord.User):
     if str(reaction.emoji) == "🔥":
         embed = discord.Embed(title=reaction.message.author.display_name, 
                               description=f"{reaction.message.content}\n\n{reaction.message.jump_url}",
