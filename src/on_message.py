@@ -61,14 +61,13 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if len(message.embeds) > 0:
         return
 
-    already_reacted = False
     for reaction in message.reactions:
         if str(reaction.emoji) == "🔥": 
-            if reaction.count > 1:
-                already_reacted = True
-            break 
-
-    await message.add_reaction("🔥") # so that no one can spam it
+            async for user in reaction.users():
+                if user.id = bot.user.id:
+                    return
+            if reaction.count != 3:
+                return      
 
     if not already_reacted:
         embed = discord.Embed(title=message.author.display_name, 
