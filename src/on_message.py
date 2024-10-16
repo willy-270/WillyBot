@@ -55,15 +55,28 @@ async def on_message(message: discord.Message):
 
 @bot.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
+    if str(payload.emoji) != "🔥":
+        return
+
     message = await bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
 
-    if str(payload.emoji) == "🔥":
+    already_reacted = False
+
+    for reaction in message.reactions:
+        if str(reaction.emoji) == "🔥": 
+            if reaction.count > 1:
+                already_reacted = True
+            break 
+
+    await message.add_reaction("🔥") # so that no one can spam it
+
+    if not already_reacted:
         embed = discord.Embed(title=message.author.display_name, 
                               description=f"{message.content}\n\n{message.jump_url}",
                               color=discord.Color.green())
-        embed.set_thumbnail(url=message.author.avatar.url)
+        embed.set_thumbnail(url=message.author.avatar.url if message.author.avatar else message.author.default_avatar)
         embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
         hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embed=embed)
 
-        await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}")
+        await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}", mention_author=False)
 
