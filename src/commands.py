@@ -270,14 +270,14 @@ async def good_morning():
     if r.status_code == 200:
         r = r.json()
         gif_url = r["results"][0]["media_formats"]["mediumgif"]["url"]
-        meals_channel.send(gif_url)
+        await meals_channel.send(gif_url)
     else:
-        meals_channel.send(f"Error: {r.status_code}")
+        await meals_channel.send(f"Error: {r.status_code}")
 
     r = requests.get("https://zenquotes.io/api/random")
     if r.status_code == 200:
         r = r.json()
-        meals_channel.send(f'{r[0]["q"]} — {r[0]["a"]}')
+        await meals_channel.send(f'{r[0]["q"]} — {r[0]["a"]}')
     else:
-        meals_channel.send("Error")
-        meals_channel.send(f"Error: {r.status_code}")
+        await meals_channel.send("Error")
+        await meals_channel.send(f"Error: {r.status_code}")
