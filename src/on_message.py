@@ -58,7 +58,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     if str(payload.emoji) != "🔥":
         return
     message = await bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
-    if message.embeds.length > 0:
+    if len(message.embeds) > 0:
         return
 
     already_reacted = False
