@@ -55,7 +55,7 @@ async def on_message(message: discord.Message):
 
 @bot.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
-    message = bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
+    message = await bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
 
     if str(payload.emoji) == "🔥":
         embed = discord.Embed(title=message.author.display_name, 
