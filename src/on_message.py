@@ -54,14 +54,16 @@ async def on_message(message: discord.Message):
     #         await message.delete()
 
 @bot.event
-async def on_raw_reaction_add(reaction: discord.Reaction, user: discord.User):
-    if str(reaction.emoji) == "🔥":
-        embed = discord.Embed(title=reaction.message.author.display_name, 
-                              description=f"{reaction.message.content}\n\n{reaction.message.jump_url}",
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
+    message = bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
+
+    if str(payload.emoji) == "🔥":
+        embed = discord.Embed(title=message.author.display_name, 
+                              description=f"{message.content}\n\n{message.jump_url}",
                               color=discord.Color.green())
-        embed.set_thumbnail(url=reaction.message.author.avatar.url)
-        embed.set_footer(text=f"{reaction.message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
+        embed.set_thumbnail(url=message.author.avatar.url)
+        embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
         hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embed=embed)
 
-        await reaction.message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}")
+        await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}")
 
