@@ -64,7 +64,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     for reaction in message.reactions:
         if str(reaction.emoji) == "🔥": 
             async for user in reaction.users():
-                if user.id = bot.user.id:
+                if user.id == bot.user.id:
                     return
             if reaction.count != 3:
                 return      
