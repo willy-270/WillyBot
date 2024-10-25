@@ -82,10 +82,10 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     for attatchment in message.attachments:
         if "image" in attatchment.content_type:
             if idx == 0:
-                main_embed.set_image(attatchment.url)
+                main_embed.set_image(url=attatchment.url)
             else:
                 image_embed = discord.Embed()
-                image_embed.set_image(attatchment.url)
+                image_embed.set_image(url=attatchment.url)
                 embeds.append(image_embed)
         else:
             other_attatchments_url.append(attatchment.url)
