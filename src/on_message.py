@@ -35,13 +35,13 @@ async def on_message(message: discord.Message):
 
     if "nigger" in msg_lower:
         embed = discord.Embed(title=message.author.display_name, 
-                              description=f"{message.content}\n\n{message.jump_url}",
+                              description=f"{message.content}\n\n[Jump to message]({message.jump_url})",
                               color=discord.Color.red())
         embed.set_thumbnail(url=message.author.avatar.url)
         embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
         hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embed=embed)
 
-        await message.reply(f"This will not be forgetten.\n{hos_msg.jump_url}")
+        await message.reply(f"This will not be forgotten.\n{hos_msg.jump_url}")
         
 
     # global alex_msgs_left
@@ -69,13 +69,36 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             if reaction.count != 3:
                 return      
 
-    embed = discord.Embed(title=message.author.display_name, 
-                              description=f"{message.content}\n\n{message.jump_url}",
-                              color=discord.Color.green())
-    embed.set_thumbnail(url=message.author.avatar.url if message.author.avatar else message.author.default_avatar)
-    embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
-    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embed=embed)
-    
+    main_embed = discord.Embed(title=message.author.display_name, 
+                          description=f"{message.content}\n\n[Jump to message]({message.jump_url})",
+                          color=discord.Color.green())
+    main_embed.set_thumbnail(url=message.author.avatar.url if message.author.avatar else message.author.default_avatar)
+    main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
+
+    embeds = [main_embed]
+    other_attatchments_url = []
+
+    idx = 0
+    for attatchment in message.attachments:
+        if attatchment.content_type == "image":
+            if idx == 0:
+                main_embed.set_image(attatchment.url)
+            else:
+                image_embed = discord.Embed()
+                image_embed.set_image(attatchment.url)
+                embeds.append(image_embed)
+        else:
+            other_attatchments_url.append(attatchment.url)
+        idx += 1
+
+    files_to_send: list[discord.File] = []
+    for url in other_attatchments_url:
+        file = await discord.File.from_url(url)
+        files_to_send.append(file)
+
+    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, files=files_to_send)
+
+
     await message.add_reaction("🔥")
     await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}", mention_author=False)
 
