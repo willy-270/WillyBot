@@ -66,7 +66,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             async for user in reaction.users():
                 if user.id == bot.user.id:
                     return
-            if reaction.count != 3:
+            if reaction.count != 2:
                 return      
 
     main_embed = discord.Embed(title=message.author.display_name, 
