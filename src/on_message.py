@@ -80,7 +80,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 
     idx = 0
     for attatchment in message.attachments:
-        if attatchment.content_type == "image":
+        if "image" in attachment.content_type
             if idx == 0:
                 main_embed.set_image(attatchment.url)
             else:
@@ -91,13 +91,11 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             other_attatchments_url.append(attatchment.url)
         idx += 1
 
-    files_to_send: list[discord.File] = []
+    attachments_string = ""
     for url in other_attatchments_url:
-        file = await discord.File.from_url(url)
-        files_to_send.append(file)
+        attachments_string += url + "\n"
 
-    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, files=files_to_send)
-
+    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, content=attachments_string)
 
     await message.add_reaction("🔥")
     await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}", mention_author=False)
