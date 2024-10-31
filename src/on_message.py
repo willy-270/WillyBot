@@ -91,6 +91,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                 main_embed.set_image(url=attatchment.url)
             else:
                 image_embed = discord.Embed()
+                image_embed.color = discord.Color.green()
                 image_embed.set_image(url=attatchment.url)
                 embeds.append(image_embed)
         else:
