@@ -82,27 +82,25 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
 
     embeds = [main_embed]
-    other_attatchments_url = []
+    other_attatchments = []
 
     idx = 0
     for attatchment in message.attachments:
         if "image" in attatchment.content_type:
             if idx == 0:
                 main_embed.set_image(url=attatchment.url)
+                if message.content == "":
+                    main_embed.description += "\n "
             else:
                 image_embed = discord.Embed()
                 image_embed.color = discord.Color.green()
                 image_embed.set_image(url=attatchment.url)
                 embeds.append(image_embed)
         else:
-            other_attatchments_url.append(attatchment.url)
+            other_attatchments.append(attatchment.to_file())
         idx += 1
 
-    attachments_string = ""
-    for url in other_attatchments_url:
-        attachments_string += url + "\n"
-
-    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, content=attachments_string)
+    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, files=other_attatchments)
 
     await message.add_reaction("🔥")
     await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}", mention_author=False)
