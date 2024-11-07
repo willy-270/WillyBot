@@ -21,8 +21,8 @@ async def receive_data():
 
         if data["event"] == "library.new":
             await handle_new_addtition(data)
-        elif data["event"] == "media.play":
-            await handle_play(data)
+        # elif data["event"] == "media.play":
+        #     await handle_play(data)
 
     return 'Data received successfully!', 200
 
@@ -41,21 +41,21 @@ async def handle_new_addtition(data):
 
     os.remove("src/thumb.jpg")
 
-async def handle_play(data):
-    title = data["Metadata"]["title"]
-    user = data["Account"]["title"]
-    file = discord.File("src/thumb.jpg", filename="thumb.jpg")
+# async def handle_play(data):
+#     title = data["Metadata"]["title"]
+#     user = data["Account"]["title"]
+#     file = discord.File("src/thumb.jpg", filename="thumb.jpg")
 
-    embed = discord.Embed()
-    embed.title = "Movie played"
-    embed.description = f"**{user}** is watching **{title}**"
-    embed.color = discord.Color.yellow()
-    embed.set_thumbnail(url="attachment://thumb.jpg")
+#     embed = discord.Embed()
+#     embed.title = "Movie played"
+#     embed.description = f"**{user}** is watching **{title}**"
+#     embed.color = discord.Color.yellow()
+#     embed.set_thumbnail(url="attachment://thumb.jpg")
 
-    channel = client.bot.get_channel(PLEX_CHANNEL_ID)
-    await channel.send(embed=embed, file=file)
+#     channel = client.bot.get_channel(PLEX_CHANNEL_ID)
+#     await channel.send(embed=embed, file=file)
 
-    os.remove("src/thumb.jpg")
+#     os.remove("src/thumb.jpg")
 
 async def run_server():
     print("Starting plex listener")
