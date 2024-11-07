@@ -97,7 +97,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
                 image_embed.set_image(url=attatchment.url)
                 embeds.append(image_embed)
         else:
-            await other_attatchments.append(attatchment.to_file())
+            other_attatchments.append(await attatchment.to_file())
         idx += 1
 
     hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, files=other_attatchments)
