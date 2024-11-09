@@ -15,6 +15,34 @@ from pytz import timezone
 #     global alex_msgs_left
 #     alex_msgs_left = 3
 
+async def make_quote_embed(message: discord.Message, hof: bool):
+    main_embed = discord.Embed(title=message.author.display_name, 
+                          description=f"{message.content}\n\n[Jump to message]({message.jump_url})",
+                          color=discord.Color.green() if hof else discord.Color.red())
+    main_embed.set_thumbnail(url=message.author.avatar.url if message.author.avatar else message.author.default_avatar)
+    main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
+
+    embeds = [main_embed]
+    other_attatchments = []
+
+    idx = 0
+    for attatchment in message.attachments:
+        if "image" in attatchment.content_type:
+            if idx == 0:
+                main_embed.set_image(url=attatchment.url)
+                if message.content == "":
+                    main_embed.description += "\n ‎"
+            else:
+                image_embed = discord.Embed()
+                image_embed.color = discord.Color.green() if hof else discord.Color.red()
+                image_embed.set_image(url=attatchment.url)
+                embeds.append(image_embed)
+        else:
+            other_attatchments.append(await attatchment.to_file())
+        idx += 1
+
+    return {"embeds": embeds, "files": other_attatchments}
+
 @bot.event 
 async def on_message(message: discord.Message):
     if isinstance(message.channel,discord.DMChannel) and message.author != bot.user:
@@ -34,13 +62,9 @@ async def on_message(message: discord.Message):
         await message.channel.send("https://images.sftcdn.net/images/t_app-cover-l,f_auto/p/4f7aac60-2de4-47e6-94f1-2f642827824c/1253432816/skibidi-toilet-1-screenshot.png")
 
     if "nigger" in msg_lower:
-        embed = discord.Embed(title=message.author.display_name, 
-                              description=f"{message.content}\n\n[Jump to message]({message.jump_url})",
-                              color=discord.Color.red())
-        embed.set_thumbnail(url=message.author.avatar.url)
-        embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
-        hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embed=embed)
+        content = await make_quote_embed(message, False)
 
+        hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embeds=content.embeds, files=content.files)
         await message.reply(f"This will not be forgotten.\n{hos_msg.jump_url}")
         
 
@@ -75,32 +99,9 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
             if reaction.count != 2:
                 return      
 
-    main_embed = discord.Embed(title=message.author.display_name, 
-                          description=f"{message.content}\n\n[Jump to message]({message.jump_url})",
-                          color=discord.Color.green())
-    main_embed.set_thumbnail(url=message.author.avatar.url if message.author.avatar else message.author.default_avatar)
-    main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
+    content = await make_quote_embed(message, True)
 
-    embeds = [main_embed]
-    other_attatchments = []
-
-    idx = 0
-    for attatchment in message.attachments:
-        if "image" in attatchment.content_type:
-            if idx == 0:
-                main_embed.set_image(url=attatchment.url)
-                if message.content == "":
-                    main_embed.description += "\n "
-            else:
-                image_embed = discord.Embed()
-                image_embed.color = discord.Color.green()
-                image_embed.set_image(url=attatchment.url)
-                embeds.append(image_embed)
-        else:
-            other_attatchments.append(await attatchment.to_file())
-        idx += 1
-
-    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=embeds, files=other_attatchments)
+    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=content.embeds, files=content.files)
 
     await message.add_reaction("🔥")
     await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}", mention_author=False)
