@@ -110,7 +110,7 @@ async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
 
     content = await make_quote_embed(message, True)
 
-    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=content.embeds, files=content.files)
+    hof_msg = await bot.get_channel(HALL_OF_FAME_CHANNEL_ID).send(embeds=content["embeds"], files=content["files"])
 
     await message.add_reaction("🔥")
     await message.reply(f"Added to hall of fame.\n{hof_msg.jump_url}", mention_author=False)
