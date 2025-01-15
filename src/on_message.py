@@ -26,7 +26,7 @@ async def make_quote_embed(message: discord.Message, hof: bool) -> dict["embeds"
         async with session.get(message.author.avatar.url if message.author.avatar else message.author.default_avatar.url) as resp:
             img = await resp.read() 
             with io.BytesIO(img) as file:
-                main_embed.set_thumbnail(url=f"attachment://{discord.File(file, "testimage.png").filename}")
+                main_embed.set_thumbnail(url=f"attachment://{discord.File(file, 'testimage.png').filename}")
     main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
 
     embeds = [main_embed]
