@@ -1,8 +1,10 @@
+import io
 from consts import PLAYER_LIST_CHANNEL_ID, OWNER_ID, HALL_OF_SHAME_CHANNEL_ID, HALL_OF_FAME_CHANNEL_ID
 from client import bot
 import discord
 from datetime import datetime
 from pytz import timezone
+import aiohttp
 
 # alex_msgs_left = 3
 # alex_id = 905459622884814868
@@ -19,7 +21,13 @@ async def make_quote_embed(message: discord.Message, hof: bool):
     main_embed = discord.Embed(title=message.author.display_name, 
                           description=f"{message.content}\n\n[Jump to message]({message.jump_url})",
                           color=discord.Color.green() if hof else discord.Color.red())
-    main_embed.set_thumbnail(url=message.author.avatar.url if message.author.avatar else message.author.default_avatar)
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(message.author.avatar.url if message.author.avatar else message.author.default_avatar.url) as resp:
+            img = await resp.read() 
+            with io.BytesIO(img) as file:
+                pfp = discord.File(file, "testimage.png")
+    main_embed.set_thumbnail(url=f"attachment://{pfp.filename}")
     main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
 
     embeds = [main_embed]
