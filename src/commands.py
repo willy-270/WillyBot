@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from discord.ext import tasks
 from datetime import datetime, time
 
@@ -264,12 +265,13 @@ async def purge(
 async def good_morning():
     meals_channel = bot.get_channel(MEALS_CHANNEL_ID)
 
-    lmt = 1
+    lmt = 10
     search_term = f"goodmorning {datetime.today().strftime('%A').lower()}"
     r = requests.get("https://tenor.googleapis.com/v2/search?q=%s&key=%s&limit=%s" % (search_term, TENOR_API_KEY, lmt))
     if r.status_code == 200:
+        i = random.randint(0, lmt-1)
         r = r.json()
-        gif_url = r["results"][0]["media_formats"]["mediumgif"]["url"]
+        gif_url = r["results"][i]["media_formats"]["mediumgif"]["url"]
         await meals_channel.send(gif_url)
     else:
         await meals_channel.send(f"Error: {r.status_code}")
