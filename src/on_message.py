@@ -74,7 +74,7 @@ async def on_message(message: discord.Message):
     if "nigger" in msg_lower:
         content = await make_quote_embed(message, False)
 
-        hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embeds=content.embeds, files=content.files)
+        hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embeds=content["embeds"], files=content["files"])
         await message.reply(f"This will not be forgotten.\n{hos_msg.jump_url}")
         
 
