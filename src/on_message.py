@@ -28,7 +28,8 @@ async def make_quote_embed(message: discord.Message, hof: bool) -> dict["embeds"
             with io.BytesIO(img) as file:
                 main_embed.set_thumbnail(url=f"attachment://{discord.File(file, 'testimage.png').filename}")
                 session.close()
- main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
+
+    main_embed.set_footer(text=f"{message.created_at.replace(tzinfo=timezone('UTC')).astimezone(timezone('America/Chicago')).strftime('%-m/%-d/%Y, %-I:%M %p')}")
 
     embeds = [main_embed]
     other_attatchments = []
