@@ -121,7 +121,12 @@ async def update_list():
         elif seconds_since_join < 3600:
             r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 60)}min\n"
         else:
-            r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 3600)}hr {int((seconds_since_join % 3600) // 60)}min\n"
+            hours = int(seconds_since_join // 3600)
+            minutes = int((seconds_since_join % 3600) // 60)
+            if minutes == 0:
+                r.description += f"• **{player['gamertag']}** for {hours}hr\n"
+            else:
+                r.description += f"• **{player['gamertag']}** for {hours}hr {minutes}min\n"
         
 
     r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")
