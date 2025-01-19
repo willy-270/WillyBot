@@ -116,10 +116,8 @@ async def get_online_gamertags():
     online_xuids = await get_online_xuids()
 
     if compare(online_xuids, prev_online_xuids) == True:
-        print("no change")
         return prev_online_gamertags
     else:
-        print("change")
         prev_online_xuids = online_xuids
 
     online_gamertags = await get_gamertags(online_xuids)

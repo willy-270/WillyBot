@@ -63,8 +63,6 @@ prev_gamertags = []
 
 @tasks.loop(minutes=1, count=720)
 async def update_list():
-    print(f"updating list...")
-
     global player_list
     global prev_gamertags
     
@@ -120,14 +118,13 @@ async def update_list():
 
         if seconds_since_join < 60:
             r.description += f"• **{player['gamertag']}** for < 1min\n"
-        elif seconds_since_join >= 60:
+        elif seconds_since_join < 3600:
             r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 60)}min\n"
-        elif seconds_since_join >= 3600:
+        else:
             r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 3600)}hr {int((seconds_since_join % 3600) // 60)}min\n"
         
 
     r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")
-    print(f"list updated on {datetime.today().strftime('%I:%M %p')}")
     await player_list.edit(embed=r)
     await player_list.channel.name = f"{len(gamertags)}-players-online"
     
