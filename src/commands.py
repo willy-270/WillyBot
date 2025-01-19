@@ -132,7 +132,7 @@ async def update_list():
     r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")
     await player_list.edit(embed=r)
     if f"{len(gamertags)}-players-online" != player_list.channel.name:
-        await player_list.channel.edit(name=f"{len(gamertags)}-players-online")
+        await player_list.channel.edit(name=f"🟢{len(gamertags)}-players-online") if len(gamertags) > 0 else await player_list.channel.edit(name="🔴no-players-online")
     
 
 @bot.tree.command(
