@@ -8,7 +8,7 @@ service_token = ""
 prev_online_xuids = []
 prev_online_gamertags = []
 
-async def get_gamertags(xuids):
+async def get_gamertags(xuids) -> dict["gamertag": str, "time_joined": datetime]:
     if len(xuids) == 0:
         return []
 
@@ -109,7 +109,7 @@ async def get_online_xuids():
 def compare(s, t):
     return Counter(s) == Counter(t)
 
-async def get_online_gamertags():
+async def get_online_gamertags() -> dict["gamertag": str, "time_joined": datetime]:
     global prev_online_xuids
     global prev_online_gamertags
 

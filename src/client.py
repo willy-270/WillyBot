@@ -18,5 +18,3 @@ async def on_ready():
 
 async def start():
     await bot.start(BOT_TOKEN)
-
-    
