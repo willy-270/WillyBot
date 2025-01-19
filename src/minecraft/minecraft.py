@@ -1,4 +1,4 @@
-from typing import Counter
+from typing import Counter, Dict
 from datetime import datetime
 import aiohttp
 import requests
@@ -8,7 +8,7 @@ service_token = ""
 prev_online_xuids = []
 prev_online_gamertags = []
 
-async def get_gamertags(xuids) -> dict["gamertag": str, "time_joined": datetime]:
+async def get_gamertags(xuids) -> Dict["gamertag": str, "time_joined": datetime]:
     if len(xuids) == 0:
         return []
 

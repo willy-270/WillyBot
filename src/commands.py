@@ -51,17 +51,13 @@ async def self(
     await interaction.response.send_message("done", ephemeral=True)
     player_list = await interaction.channel.send(embed=r)
 
-    while running == True:
-        minecraft.service_token = minecraft_auth.get_service_token()
-        await update_list.start()
-        prev_embed = player_list.embeds[0]
-        await player_list.delete()
-        player_list = await interaction.channel.send(embed=prev_embed)
+    minecraft.service_token = minecraft_auth.get_service_token()
+    await update_list.start()
 
 
 prev_gamertags = []
 
-@tasks.loop(minutes=1, count=720)
+@tasks.loop(minutes=1)
 async def update_list():
     global player_list
     global prev_gamertags
