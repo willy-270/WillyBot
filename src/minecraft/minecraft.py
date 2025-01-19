@@ -96,6 +96,7 @@ async def get_online_xuids():
                 r = await response.json()
     except Exception as e:
         print(f"Error in get_online_xuids: {e}")
+        return []
 
     online_xuids = []
     members = r["clubs"][0]["clubPresence"]
