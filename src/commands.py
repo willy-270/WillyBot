@@ -85,12 +85,12 @@ async def update_list():
         left_players = set(prev_gamertags) - set(just_gamertags)
 
         if joined_players:
-            log.description = f"**{' & '.join(joined_players)}** joined the realm!"
+            log.description = f"{' & '.join([f'**{player}**' for player in joined_players])} joined the realm!"
             log.color = discord.Color.green()
             await join_leaves.send(embed=log) 
 
         if left_players:
-            log.description = f"**{' & '.join(left_players)}** left the realm!"
+            log.description = f"{' & '.join([f'**{player}**' for player in left_players])} left the realm!"
             log.color = discord.Color.red()
             await join_leaves.send(embed=log) 
 
@@ -119,11 +119,11 @@ async def update_list():
         seconds_since_join = time_since_join.total_seconds()
 
         if seconds_since_join < 60:
-            r.description += f"• **{player['gamertag']}** for < 1min"
+            r.description += f"• **{player['gamertag']}** for < 1min\n"
         elif seconds_since_join >= 60:
-            r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 60)}min(s)"
-        else:
-            r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 3600)}hr(s) and {int((seconds_since_join % 3600) // 60)}min(s)"
+            r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 60)}min\n"
+        elif seconds_since_join >= 3600:
+            r.description += f"• **{player['gamertag']}** for {int(seconds_since_join // 3600)}hr {int((seconds_since_join % 3600) // 60)}min\n"
         
 
     r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")

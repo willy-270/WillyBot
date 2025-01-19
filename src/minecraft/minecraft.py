@@ -92,13 +92,12 @@ async def get_online_xuids():
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url=url, headers=headers) as response:
+            async with session.get(url=url, headers=headers, params=params) as response:
                 r = await response.json()
     except Exception as e:
         print(f"Error in get_online_xuids: {e}")
 
     online_xuids = []
-
     members = r["clubs"][0]["clubPresence"]
 
     for member in members:
