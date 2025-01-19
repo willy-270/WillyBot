@@ -72,18 +72,20 @@ def get_service_token():
     ACCEPTBUTTON = (By.ID, "acceptButton")
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--window-size=1920,1080')
-    chrome_options.add_argument('--headless=new')
-    chrome_options.add_argument('--disable-gpu')
+    chrome_options.add_argument('--headless')  # Run in headless mode
+    chrome_options.add_argument('--no-sandbox')  # Required in Docker
+    chrome_options.add_argument('--disable-dev-shm-usage')  # Overcomes resource constraints
+    chrome_options.add_argument('--disable-gpu')  # Avoid GPU usage
+    chrome_options.add_argument('--window-size=1920x1080')  # Set a fixed window size
+
     driver = webdriver.Chrome(options=chrome_options)
     driver.get(auth_url)
 
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable(EMAILFIELD)).send_keys(EMAIL)
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable(NEXTBUTTON)).click()
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable(PASSWORDFIELD)).send_keys(PASSWORD)
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable(NEXTBUTTON)).click()
-    WebDriverWait(driver, 10).until(EC.element_to_be_clickable(ACCEPTBUTTON)).click()
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(EMAILFIELD)).send_keys(EMAIL)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(NEXTBUTTON)).click()
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(PASSWORDFIELD)).send_keys(PASSWORD)
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(NEXTBUTTON)).click()
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable(ACCEPTBUTTON)).click()
 
     redirected_url = driver.current_url
     auth_code = redirected_url.split('code=')[1].split('&')[0]

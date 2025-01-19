@@ -25,5 +25,4 @@ async def main():
     )
 
 if __name__ == "__main__":
-    # You don't need to pass `debug=True` here; logging is managed separately
     asyncio.run(main())
