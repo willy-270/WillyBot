@@ -129,6 +129,7 @@ async def update_list():
     r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")
     print(f"list updated on {datetime.today().strftime('%I:%M %p')}")
     await player_list.edit(embed=r)
+    await player_list.channel.name = f"{len(gamertags)}-players-online"
     
 
 @bot.tree.command(
