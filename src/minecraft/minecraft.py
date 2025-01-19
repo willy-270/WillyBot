@@ -12,6 +12,8 @@ async def get_gamertags(xuids) -> dict["gamertag": str, "time_joined": datetime]
     if len(xuids) == 0:
         return []
 
+    print(f"Getting gamertags for {xuids}")
+
     headers = {
         'x-authorization': OPEN_XPL_API_KEY,
     }
@@ -96,6 +98,7 @@ async def get_online_xuids():
                 r = await response.json()
     except Exception as e:
         print(f"Error in get_online_xuids: {e}")
+        print(f"Response: {r.text}")
         return []
 
     online_xuids = []
