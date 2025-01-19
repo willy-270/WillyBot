@@ -1,4 +1,4 @@
-from typing import Counter, Dict
+from typing import List, Dict, Any
 from datetime import datetime
 import aiohttp
 import requests
@@ -8,58 +8,51 @@ service_token = ""
 prev_online_xuids = []
 prev_online_gamertags = []
 
-async def get_gamertags(xuids) -> Dict["gamertag": str, "time_joined": datetime]:
-    if len(xuids) == 0:
+async def get_gamertags(xuids: List[str], prev_online_gamertags: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    if not xuids:
         return []
 
     print(f"Getting gamertags for {xuids}")
 
-    headers = {
-        'x-authorization': OPEN_XPL_API_KEY,
-    }
-
-    params = {
-        "xuids": xuids
-    }
-
+    headers = {'x-authorization': OPEN_XPL_API_KEY}
     url = f'https://xbl.io/api/v2/account/{",".join(xuids)}'
 
-    r = requests.get(url=url, headers=headers, params=params)
-    r = r.json()
+    response = requests.get(url=url, headers=headers)
+    response_data = response.json()
 
     gamertags = []
-    global prev_online_gamertags
 
     if len(xuids) > 1:
-        people = r["people"]
+        people = response_data.get("people", [])
 
         for person in people:
-            in_prev = any(person["gamertag"] in player.values() for player in prev_online_gamertags)
+            gamertag_dict = {"gamertag": person["gamertag"]}
+            # Check if this person was already online
+            previous_entry = next(
+                (player for player in prev_online_gamertags if player["gamertag"] == person["gamertag"]), None
+            )
 
-            gamertag_dict = {}
-            gamertag_dict["gamertag"] = person["gamertag"]
-
-            if in_prev == False:
-                gamertag_dict["time_joined"] = datetime.now()
-            else:
-                gamertag_dict["time_joined"] = [player["time_joined"] for player in prev_online_gamertags if player["gamertag"] == person["gamertag"]][0]
-            
+            gamertag_dict["time_joined"] = previous_entry["time_joined"] if previous_entry else datetime.now()
             gamertags.append(gamertag_dict)
+
     else:
-        gamertag_dict = {}
-        gamertag_dict["gamertag"] = r["profileUsers"][0]["settings"][2]["value"] #response when one xuid is passed is different
-        in_prev = any(gamertag_dict["gamertag"] in player.values() for player in prev_online_gamertags)
-        if in_prev == False:
-            gamertag_dict["time_joined"] = datetime.now()
-        else:
-            gamertag_dict["time_joined"] = [player["time_joined"] for player in prev_online_gamertags if player["gamertag"] == person["gamertag"]][0]
-        gamertags.append(gamertag_dict)
+        # Handling for a single XUID
+        profile_users = response_data.get("profileUsers", [])
+        if profile_users:
+            gamertag = profile_users[0]["settings"][2]["value"]  # Assuming correct index
+            gamertag_dict = {"gamertag": gamertag}
+
+            previous_entry = next(
+                (player for player in prev_online_gamertags if player["gamertag"] == gamertag), None
+            )
+
+            gamertag_dict["time_joined"] = previous_entry["time_joined"] if previous_entry else datetime.now()
+            gamertags.append(gamertag_dict)
 
     return gamertags
 
-async def get_club_id():
+async def get_club_id() -> str:
     url = f"https://pocket.realms.minecraft.net/worlds/v1/link/{INVITE_CODE}"
-
     headers = {
         "Accept": "*/*",
         "Authorization": "XBL3.0 x=" + service_token,
@@ -77,55 +70,44 @@ async def get_club_id():
         async with session.get(url=url, headers=headers) as response:
             r = await response.json()
 
-    club_id = r["clubId"]
+    return r.get("clubId", "")
 
-    return club_id
-
-async def get_online_xuids():
+async def get_online_xuids() -> List[str]:
     club_id = await get_club_id()
-
     url = f'https://xbl.io/api/v2/clubs/{club_id}'
-    params = {
-        "clubId": club_id
-    }
-    headers = {
-        "x-authorization": OPEN_XPL_API_KEY
-    }
+
+    headers = {"x-authorization": OPEN_XPL_API_KEY}
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(url=url, headers=headers, params=params) as response:
+            async with session.get(url=url, headers=headers) as response:
                 r = await response.json()
     except Exception as e:
         print(f"Error in get_online_xuids: {e}")
-        print(f"Response: {r.text}")
         return []
 
     online_xuids = []
-    members = r["clubs"][0]["clubPresence"]
+    members = r.get("clubs", [{}])[0].get("clubPresence", [])
 
     for member in members:
-        if member["lastSeenState"] == "InGame":
+        if member.get("lastSeenState") == "InGame":
             online_xuids.append(member["xuid"])
 
     return online_xuids
 
-def compare(s, t):
+def compare(s: List[Any], t: List[Any]) -> bool:
     return Counter(s) == Counter(t)
 
-async def get_online_gamertags() -> dict["gamertag": str, "time_joined": datetime]:
-    global prev_online_xuids
-    global prev_online_gamertags
+async def get_online_gamertags() -> List[Dict[str, Any]]:
+    global prev_online_xuids, prev_online_gamertags
 
     online_xuids = await get_online_xuids()
 
-    if compare(online_xuids, prev_online_xuids) == True:
+    if compare(online_xuids, prev_online_xuids):
         return prev_online_gamertags
-    else:
-        prev_online_xuids = online_xuids
 
-    online_gamertags = await get_gamertags(online_xuids)
+    prev_online_xuids = online_xuids
+    online_gamertags = await get_gamertags(online_xuids, prev_online_gamertags)
     prev_online_gamertags = online_gamertags
 
     return online_gamertags
-
