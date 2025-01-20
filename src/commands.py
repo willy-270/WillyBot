@@ -100,6 +100,8 @@ async def update_list():
         r.color = discord.Color.red()
         r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")
         await player_list.edit(embed=r)
+        if "🔴no-players-online" != player_list.channel.name:
+            await player_list.channel.edit(name="🔴no-players-online")
         return
 
     r.title = "**Current Online Players:**"
@@ -127,15 +129,12 @@ async def update_list():
 
     r.set_footer(text=f"as of {datetime.today().strftime('%I:%M %p')}")
     await player_list.edit(embed=r)
-    if len(gamertags) == 0:
-        if "🔴no-players-online" != player_list.channel.name:
-            await player_list.channel.edit(name="🔴no-players-online")
-    else:
-        if f"🟢{len(gamertags)}-players-online" != player_list.channel.name:
-            if len(gamertags) == 1:
-                await player_list.channel.edit(name=f"🟢{len(gamertags)}-player-online")
-            else:
-                await player_list.channel.edit(name=f"🟢{len(gamertags)}-players-online")
+
+    if f"🟢{len(gamertags)}-players-online" != player_list.channel.name:
+        if len(gamertags) == 1:
+            await player_list.channel.edit(name=f"🟢{len(gamertags)}-player-online")
+        else:
+            await player_list.channel.edit(name=f"🟢{len(gamertags)}-players-online")
     
 
 @bot.tree.command(
