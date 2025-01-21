@@ -23,7 +23,7 @@ async def make_quote_embed(message: discord.Message, hof: bool) -> dict["embeds"
                           color=discord.Color.green() if hof else discord.Color.red())
 
     async with aiohttp.ClientSession() as session:
-        async with session.get(message.author.avatar.url if message.author.avatar else message.author.default_avatar.url) as resp:
+        async with session.get(message.author.guild_avatar.url if message.author.guild_avatar.url else message.author.display_avatar.url) as resp:
             img = await resp.read() 
             with io.BytesIO(img) as file:
                 pfp = discord.File(file, 'testimage.png')
