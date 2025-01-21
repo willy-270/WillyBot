@@ -76,6 +76,35 @@ async def on_message(message: discord.Message):
 
         hos_msg = await bot.get_channel(HALL_OF_SHAME_CHANNEL_ID).send(embeds=content["embeds"], files=content["files"])
         await message.reply(f"This will not be forgotten.\n{hos_msg.jump_url}")
+
+    blacklisted_phrases = [
+        "freedom",
+        "taiwan",
+        "tiananmen",
+        "democracy",
+        "diplomatic",
+        "winne the pooh",
+        "disagree",
+        "human rights",
+        "tiananmen square",
+        "1989",
+        "hong kong",
+        "june 4th",
+        "free blake",
+        "blake",
+        "censorship"
+    ]
+
+    if any(phrase in msg_lower for phrase in blacklisted_phrases):
+        message.delete()
+
+        webhook = await message.channel.create_webhook(name=message.author.name)
+        await webhook.send(
+            str(message), username=message.author.name, avatar_url=message.author.avatar.url)
+
+        webhooks = await message.channel.webhooks()
+        for webhook in webhooks:
+                await webhook.delete()
         
 
     # global alex_msgs_left
