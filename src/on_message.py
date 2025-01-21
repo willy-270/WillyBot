@@ -92,21 +92,28 @@ async def on_message(message: discord.Message):
         "june 4th",
         "free blake",
         "blake",
-        "censorship"
+        "censorship",
+        "i hate my glorious leader",
+        "free"
     ]
 
     if any(phrase in msg_lower for phrase in blacklisted_phrases):
-        message.delete()
-
         webhook = await message.channel.create_webhook(name=message.author.name)
+
+        new_msg = msg_lower
+        for phrase in blacklisted_phrases:
+            if phrase in msg_lower:
+                new_msg = new_msg.replace(phrase, "||[REDACTED]||")
+
         await webhook.send(
-            str(message), username=message.author.name, avatar_url=message.author.avatar.url)
+            str(new_msg), username=message.author.display_name, avatar_url=message.author.guild_avatar.url if message.author.guild_avatar else message.author.display_avatar.url)
 
         webhooks = await message.channel.webhooks()
         for webhook in webhooks:
                 await webhook.delete()
-        
 
+        await message.delete()
+        
     # global alex_msgs_left
 
     # if message.author.id == alex_id:
