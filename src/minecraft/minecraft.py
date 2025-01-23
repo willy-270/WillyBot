@@ -84,6 +84,7 @@ async def get_online_xuids() -> List[str]:
                 r = await response.json()
     except Exception as e:
         print(f"Error in get_online_xuids: {e}")
+        print(r.text)
         return []
 
     online_xuids = []
