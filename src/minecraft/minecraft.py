@@ -83,7 +83,7 @@ async def get_online_xuids() -> List[str]:
                     print(f"Response: {await response.text()}")
                     return []
                 try:
-                    return await response.json()
+                    response = await response.json()
                 except Exception as e:
                     print(f"Error parsing JSON: {e}")
                     print(f"Raw response: {await response.text()}")
@@ -93,7 +93,7 @@ async def get_online_xuids() -> List[str]:
         return []
 
     online_xuids = []
-    members = r.get("clubs", [{}])[0].get("clubPresence", [])
+    members = response.get("clubs", [{}])[0].get("clubPresence", [])
 
     for member in members:
         if member.get("lastSeenState") == "InGame":
