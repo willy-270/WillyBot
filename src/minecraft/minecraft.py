@@ -74,7 +74,7 @@ async def get_club_id() -> str:
 
 async def get_online_xuids() -> List[str]:
     club_id = await get_club_id()
-    url = f'https://xbl.io/api/v2/clubs/{club_id}'
+    url = f'https://xbl.io/api/v2/clubs/3379895950550166'
 
     headers = {"x-authorization": OPEN_XPL_API_KEY}
 
