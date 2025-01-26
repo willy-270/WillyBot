@@ -73,18 +73,23 @@ async def get_club_id() -> str:
     return r.get("clubId", "")
 
 async def get_online_xuids() -> List[str]:
-    club_id = await get_club_id()
-    url = f'https://xbl.io/api/v2/clubs/3379895950550166'
-
+    url = 'https://xbl.io/api/v2/clubs/3379895950550166'
     headers = {"x-authorization": OPEN_XPL_API_KEY}
-
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers) as response:
-                r = await response.json()
+                if response.status != 200:
+                    print(f"Unexpected status code: {response.status}")
+                    print(f"Response: {await response.text()}")
+                    return []
+                try:
+                    return await response.json()
+                except Exception as e:
+                    print(f"Error parsing JSON: {e}")
+                    print(f"Raw response: {await response.text()}")
+                    return []
     except Exception as e:
         print(f"Error in get_online_xuids: {e}")
-        print(r.text)
         return []
 
     online_xuids = []
